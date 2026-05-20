@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <title>BEATRUN</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&display=swap');
+
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:#06040d;overflow:hidden;font-family:'Share Tech Mono',monospace;color:#fff;touch-action:none;}
+    canvas{display:block;}
+
+    #ui{position:fixed;inset:0;pointer-events:none;z-index:10;}
+
+    /* ── MENU ── */
+    #menu{
+      position:fixed;inset:0;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;gap:28px;
+      background:radial-gradient(ellipse at 60% 40%, #1a0030 0%, #06040d 70%);
+      z-index:20;
+    }
+    #menu-title{
+      font-family:'Bebas Neue',sans-serif;font-size:clamp(72px,15vw,130px);
+      line-height:.9;letter-spacing:-2px;text-align:center;
+      background:linear-gradient(135deg,#fff 0%,#ff2d78 50%,#a855f7 100%);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+      filter:drop-shadow(0 0 40px rgba(255,45,120,.4));
+      animation:logoPulse 3s ease-in-out infinite;
+    }
+    @keyframes logoPulse{0%,100%{filter:drop-shadow(0 0 30px rgba(255,45,120,.3))}50%{filter:drop-shadow(0 0 60px rgba(168,85,247,.6))}}
+    #menu-sub{font-size:12px;letter-spacing:6px;color:rgba(255,255,255,.4);margin-top:-10px;}
+    #btn-play{
+      font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;
+      padding:16px 60px;border:2px solid rgba(255,45,120,.6);background:rgba(255,45,120,.12);
+      color:#fff;cursor:pointer;border-radius:4px;
+      transition:all .2s;pointer-events:all;
+    }
+    #btn-play:hover{background:rgba(255,45,120,.28);border-color:#ff2d78;transform:scale(1.04);}
+    #menu-controls{
+      display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;
+      font-size:11px;color:rgba(255,255,255,.35);letter-spacing:2px;max-width:320px;
+    }
+    #menu-controls span{color:rgba(255,255,255,.65);}
+    #menu-best{font-size:11px;letter-spacing:3px;color:rgba(255,255,255,.3);}
+    #menu-best span{color:#ff2d78;}
+
+    /* ── HUD ── */
+    #hud-score-wrap{
+      position:fixed;top:20px;right:24px;text-align:right;
+    }
+    #hud-score{font-family:'Bebas Neue',sans-serif;font-size:52px;line-height:1;color:#ff2d78;
+      text-shadow:0 0 20px rgba(255,45,120,.5);}
+    #hud-score-label{font-size:10px;letter-spacing:4px;color:rgba(255,255,255,.3);}
+
+    #hud-combo-wrap{position:fixed;top:20px;left:24px;}
+    #hud-combo{font-family:'Bebas Neue',sans-serif;font-size:52px;line-height:1;color:#fff;
+      transition:color .15s,transform .1s;}
+    #hud-combo.pop{transform:scale(1.4);}
+    #hud-combo-label{font-size:10px;letter-spacing:4px;color:rgba(255,255,255,.3);}
+
+    #hud-flow-wrap{
+      position:fixed;bottom:0;left:0;right:0;height:4px;
+      background:rgba(255,255,255,.06);
+    }
+    #hud-flow-bar{height:100%;width:0%;background:linear-gradient(90deg,#a855f7,#ff2d78);
+      transition:width .12s;box-shadow:0 0 12px rgba(168,85,247,.8);}
+
+    #hud-beat{
+      position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+      font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:6px;
+      color:#ffde00;text-shadow:0 0 30px #ffde00;
+      opacity:0;pointer-events:none;transition:opacity .08s;
+    }
+    #hud-beat.show{opacity:1;}
+
+    #hud-move{
+      position:fixed;bottom:60px;left:50%;transform:translateX(-50%);
+      display:flex;flex-direction:column;align-items:center;gap:4px;
+    }
+    .move-tag{
+      font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:4px;
+      padding:2px 14px;border-radius:3px;
+      animation:tagIn .2s cubic-bezier(.175,.885,.32,1.275) forwards;
+    }
+    @keyframes tagIn{from{transform:scale(.5) translateY(8px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+
+    #hud-timer{position:fixed;top:84px;right:24px;font-size:14px;letter-spacing:2px;color:rgba(255,255,255,.5);}
+
+    #overdrive-wrap{
+      position:fixed;inset:0;pointer-events:none;
+      border:3px solid transparent;
+      transition:border-color .3s,box-shadow .3s;
+    }
+    #overdrive-wrap.active{
+      border-color:rgba(255,45,120,.5);
+      box-shadow:inset 0 0 80px rgba(255,45,120,.15),0 0 40px rgba(255,45,120,.3);
+      animation:overdrivePulse .5s ease-in-out infinite alternate;
+    }
+    @keyframes overdrivePulse{from{box-shadow:inset 0 0 60px rgba(255,45,120,.1)}to{box-shadow:inset 0 0 120px rgba(255,45,120,.25)}}
+
+    #overdrive-text{
+      position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+      font-family:'Bebas Neue',sans-serif;font-size:60px;letter-spacing:8px;
+      color:#ff2d78;text-shadow:0 0 40px rgba(255,45,120,.9),0 0 80px rgba(255,45,120,.4);
+      opacity:0;pointer-events:none;transition:opacity .3s;
+      animation:overdriveText .45s ease-in-out infinite alternate;
+    }
+    #overdrive-text.show{opacity:1;}
+    @keyframes overdriveText{from{letter-spacing:8px}to{letter-spacing:12px}}
+
+    /* freq bar */
+    #freq-canvas{position:fixed;bottom:4px;left:0;right:0;pointer-events:none;}
+
+    /* game over */
+    #gameover{
+      position:fixed;inset:0;display:none;flex-direction:column;
+      align-items:center;justify-content:center;gap:18px;
+      background:rgba(6,4,13,.92);backdrop-filter:blur(12px);z-index:25;
+    }
+    #gameover.show{display:flex;}
+    #go-grade{font-family:'Bebas Neue',sans-serif;font-size:120px;line-height:1;
+      background:linear-gradient(135deg,#fff,#ff2d78);-webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;background-clip:text;
+      animation:gradeIn .5s cubic-bezier(.175,.885,.32,1.275);}
+    @keyframes gradeIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+    #go-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:4px;color:rgba(255,255,255,.5);}
+    #go-time{font-size:36px;letter-spacing:2px;color:#00f5ff;}
+    .go-stat{display:flex;justify-content:space-between;width:280px;font-size:12px;
+      padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+    .go-stat-label{color:rgba(255,255,255,.4);letter-spacing:2px;}
+    .go-stat-val{color:#fff;}
+    #go-actions{display:flex;gap:12px;margin-top:8px;}
+    .go-btn{
+      font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;
+      padding:12px 32px;border-radius:4px;cursor:pointer;pointer-events:all;transition:all .2s;
+    }
+    .go-btn.primary{background:rgba(255,45,120,.2);border:2px solid rgba(255,45,120,.6);color:#fff;}
+    .go-btn.primary:hover{background:rgba(255,45,120,.35);}
+    .go-btn.sec{background:transparent;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);}
+    .go-btn.sec:hover{border-color:rgba(255,255,255,.4);color:#fff;}
+
+    /* mobile btns */
+    #mobile-controls{display:none;position:fixed;bottom:20px;left:0;right:0;
+      justify-content:space-between;padding:0 20px;pointer-events:all;z-index:15;}
+    @media(max-width:700px){#mobile-controls{display:flex;}}
+    .m-btn{
+      width:72px;height:72px;border-radius:50%;
+      border:2px solid rgba(255,255,255,.2);background:rgba(255,255,255,.07);
+      font-size:26px;display:flex;align-items:center;justify-content:center;
+      cursor:pointer;user-select:none;-webkit-user-select:none;
+      transition:background .1s,transform .1s;
+    }
+    .m-btn:active,.m-btn.pressed{background:rgba(255,45,120,.25);border-color:rgba(255,45,120,.6);transform:scale(.93);}
+    #m-jump{width:88px;height:88px;font-size:32px;border-color:rgba(255,45,120,.5);background:rgba(255,45,120,.12);}
+  </style>
+</head>
+<body>
+
+<!-- MENU -->
+<div id="menu">
+  <div id="menu-title">BEAT<br>RUN</div>
+  <div id="menu-sub">PLAY THE MUSIC</div>
+  <button id="btn-play">▶ &nbsp; START RUN</button>
+  <div id="menu-controls">
+    <div>← → / A D</div><div><span>MOVE</span></div>
+    <div>Space / W</div><div><span>JUMP</span></div>
+    <div>S / ↓ / C</div><div><span>SLIDE</span></div>
+    <div>Shift</div><div><span>SPRINT</span></div>
+  </div>
+  <div id="menu-best">BEST — <span id="menu-best-val">—</span></div>
+</div>
+
+<!-- GAME UI -->
+<div id="ui">
+  <div id="hud-combo-wrap">
+    <div id="hud-combo">×1</div>
+    <div id="hud-combo-label">COMBO</div>
+  </div>
+  <div id="hud-score-wrap">
+    <div id="hud-score">0</div>
+    <div id="hud-score-label">SCORE</div>
+  </div>
+  <div id="hud-timer">0:00</div>
+  <div id="hud-beat"></div>
+  <div id="hud-move"></div>
+  <div id="hud-flow-wrap"><div id="hud-flow-bar"></div></div>
+  <div id="overdrive-wrap"><div id="overdrive-text">◈ OVERDRIVE ◈</div></div>
+</div>
+
+<canvas id="freq-canvas"></canvas>
+<canvas id="c"></canvas>
+
+<!-- GAME OVER -->
+<div id="gameover">
+  <div id="go-grade">S</div>
+  <div id="go-title">RUN COMPLETE</div>
+  <div id="go-time">0:00</div>
+  <div id="go-stats"></div>
+  <div id="go-actions">
+    <button class="go-btn primary" id="go-retry">↺ RETRY</button>
+    <button class="go-btn sec" id="go-menu">⌂ MENU</button>
+  </div>
+</div>
+
+<!-- MOBILE CONTROLS -->
+<div id="mobile-controls">
+  <button class="m-btn" id="m-left">◀</button>
+  <button class="m-btn" id="m-jump">↑</button>
+  <button class="m-btn" id="m-slide">▼</button>
+  <button class="m-btn" id="m-right">▶</button>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
