@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BEATRUN — Flow State Racing</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Bebas+Neue&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════
+       MAIN MENU
+  ═══════════════════════════════════════════════ -->
+  <div id="screen-menu" class="screen active">
+    <canvas id="menu-bg-canvas"></canvas>
+
+    <div class="menu-content">
+      <div class="menu-logo-wrap">
+        <div class="menu-logo-sub">FLOW STATE RACING</div>
+        <div class="menu-logo">BEATRUN</div>
+        <div class="menu-logo-tag">↓ PLAY THE MUSIC ↓</div>
+      </div>
+
+      <div class="menu-cards">
+        <button class="menu-card primary" id="btn-play">
+          <span class="card-icon">▶</span>
+          <span class="card-label">RUN</span>
+          <span class="card-sub">Start a new run</span>
+        </button>
+        <button class="menu-card" id="btn-ghosts">
+          <span class="card-icon">👁</span>
+          <span class="card-label">GHOSTS</span>
+          <span class="card-sub">Race replays</span>
+        </button>
+        <button class="menu-card" id="btn-cosmetics">
+          <span class="card-icon">✦</span>
+          <span class="card-label">STYLE</span>
+          <span class="card-sub">Trails & skins</span>
+        </button>
+        <button class="menu-card" id="btn-leaderboard">
+          <span class="card-icon">◈</span>
+          <span class="card-label">BOARD</span>
+          <span class="card-sub">Global ranking</span>
+        </button>
+      </div>
+
+      <div class="menu-upload-zone" id="upload-zone">
+        <input type="file" id="music-upload" accept="audio/*" hidden />
+        <div class="upload-inner">
+          <div class="upload-icon">♪</div>
+          <div class="upload-text">Drop your music here</div>
+          <div class="upload-sub">or click to browse — any audio file</div>
+        </div>
+        <div class="upload-track-name" id="upload-track-name">music.mp3 · default</div>
+      </div>
+
+      <div class="menu-footer">
+        <div class="menu-footer-stat"><span id="stat-runs">0</span> RUNS</div>
+        <div class="menu-footer-stat"><span id="stat-pb">—</span> BEST</div>
+        <div class="menu-footer-stat"><span id="stat-style">0</span> STYLE PTS</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       LINE SELECT (pre-run)
+  ═══════════════════════════════════════════════ -->
+  <div id="screen-line" class="screen">
+    <div class="line-select-wrap">
+      <div class="line-select-title">CHOOSE YOUR LINE</div>
+      <div class="line-select-sub">Same map. Different experience.</div>
+
+      <div class="line-cards">
+        <div class="line-card" data-line="speed">
+          <div class="line-icon">⚡</div>
+          <div class="line-name">SPEED</div>
+          <div class="line-desc">Pure velocity. Minimal animations. Every second counts.</div>
+          <div class="line-trait">Boosts wallrun speed +40%</div>
+          <div class="line-trail" style="--tc:#00f5ff"></div>
+        </div>
+        <div class="line-card active" data-line="style">
+          <div class="line-icon">✦</div>
+          <div class="line-name">STYLE</div>
+          <div class="line-desc">Express yourself. Rich VFX. Score multipliers for rare combos.</div>
+          <div class="line-trait">2× expression bonus</div>
+          <div class="line-trail" style="--tc:#ff2d78"></div>
+        </div>
+        <div class="line-card" data-line="flow">
+          <div class="line-icon">◌</div>
+          <div class="line-name">FLOW</div>
+          <div class="line-desc">Beat sync master. Full adaptive music. Obstacles pulse with BPM.</div>
+          <div class="line-trait">Music layers unlock faster</div>
+          <div class="line-trail" style="--tc:#a855f7"></div>
+        </div>
+      </div>
+
+      <div class="line-actions">
+        <button class="btn-outline" id="btn-line-back">← BACK</button>
+        <button class="btn-main" id="btn-line-start">RUN IT →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       GHOSTS / REPLAYS
+  ═══════════════════════════════════════════════ -->
+  <div id="screen-ghosts" class="screen">
+    <div class="panel-wrap">
+      <div class="panel-title">GHOST RUNS</div>
+      <div class="ghost-list" id="ghost-list">
+        <!-- populated by JS -->
+      </div>
+      <button class="btn-outline" id="btn-ghost-back">← BACK</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       COSMETICS
+  ═══════════════════════════════════════════════ -->
+  <div id="screen-cosmetics" class="screen">
+    <div class="panel-wrap">
+      <div class="panel-title">STYLE LAB</div>
+      <div class="cosmetics-grid" id="cosmetics-grid">
+        <!-- populated by JS -->
+      </div>
+      <button class="btn-outline" id="btn-cos-back">← BACK</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       LEADERBOARD
+  ═══════════════════════════════════════════════ -->
+  <div id="screen-leaderboard" class="screen">
+    <div class="panel-wrap">
+      <div class="panel-title">GLOBAL BOARD</div>
+      <div class="board-list" id="board-list">
+        <!-- populated by JS -->
+      </div>
+      <button class="btn-outline" id="btn-board-back">← BACK</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       GAME SCREEN
+  ═══════════════════════════════════════════════ -->
+  <div id="screen-game" class="screen">
+    <canvas id="game-canvas"></canvas>
+
+    <!-- HUD -->
+    <div id="hud">
+
+      <!-- top left: combo + flow -->
+      <div id="hud-left">
+        <div id="hud-combo-wrap">
+          <div id="hud-combo-num">×<span id="combo-val">1</span></div>
+          <div id="hud-combo-label">COMBO</div>
+        </div>
+        <div id="hud-flow-bar-wrap">
+          <div id="hud-flow-label">FLOW</div>
+          <div id="hud-flow-bar">
+            <div id="hud-flow-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- top center: beat indicator -->
+      <div id="hud-center">
+        <div id="beat-ring-outer">
+          <div id="beat-ring-inner"></div>
+        </div>
+        <div id="hud-bpm-label"><span id="bpm-val">—</span> BPM</div>
+      </div>
+
+      <!-- top right: timer + score -->
+      <div id="hud-right">
+        <div id="hud-timer"><span id="timer-val">0:00.00</span></div>
+        <div id="hud-score"><span id="score-val">0</span></div>
+        <div id="hud-score-label">SCORE</div>
+      </div>
+
+      <!-- center overlay: beat sync feedback -->
+      <div id="hud-beat-feedback" class="beat-feedback"></div>
+
+      <!-- bottom: move tags -->
+      <div id="hud-moves">
+        <div id="move-tag-list"></div>
+      </div>
+
+      <!-- overdrive banner -->
+      <div id="overdrive-banner">
+        <div id="overdrive-text">◈ OVERDRIVE ◈</div>
+      </div>
+
+      <!-- bottom bar: freq visualizer -->
+      <div id="freq-viz">
+        <canvas id="freq-canvas"></canvas>
+      </div>
+
+      <!-- pause btn -->
+      <button id="btn-pause">⏸</button>
+
+    </div>
+
+    <!-- Pause overlay -->
+    <div id="pause-overlay" class="hidden">
+      <div class="pause-box">
+        <div class="pause-title">PAUSED</div>
+        <button class="btn-main" id="btn-resume">RESUME</button>
+        <button class="btn-outline" id="btn-restart">RESTART</button>
+        <button class="btn-outline" id="btn-quit">QUIT</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       RUN END / RESULTS
+  ═══════════════════════════════════════════════ -->
+  <div id="screen-results" class="screen">
+    <canvas id="results-bg-canvas"></canvas>
+    <div class="results-wrap">
+      <div class="results-grade" id="results-grade">S</div>
+      <div class="results-title" id="results-title">RUN COMPLETE</div>
+      <div class="results-time" id="results-time">0:00.00</div>
+
+      <div class="results-stats">
+        <div class="rs-row"><span class="rs-label">SCORE</span><span class="rs-val" id="rs-score">0</span></div>
+        <div class="rs-row"><span class="rs-label">BEST COMBO</span><span class="rs-val" id="rs-combo">×1</span></div>
+        <div class="rs-row"><span class="rs-label">FLOW STATE</span><span class="rs-val" id="rs-flow">0s</span></div>
+        <div class="rs-row"><span class="rs-label">EXPRESSION</span><span class="rs-val" id="rs-expr">0</span></div>
+        <div class="rs-row"><span class="rs-label">BEAT SYNC %</span><span class="rs-val" id="rs-sync">0%</span></div>
+        <div class="rs-row"><span class="rs-label">OVERDRIVE</span><span class="rs-val" id="rs-overdrive">0×</span></div>
+      </div>
+
+      <div class="results-actions">
+        <button class="btn-main" id="btn-retry">↺ RETRY</button>
+        <button class="btn-outline" id="btn-save-ghost">💾 SAVE GHOST</button>
+        <button class="btn-outline" id="btn-clip">📱 EXPORT CLIP</button>
+        <button class="btn-outline" id="btn-results-menu">⌂ MENU</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global neon canvas (trails drawn here, on top of game) -->
+  <canvas id="trail-canvas"></canvas>
+
+  <!-- Clip recording indicator -->
+  <div id="clip-indicator">⏺ CLIP</div>
+
+  <script src="game.js"></script>
+</body>
+</html>
