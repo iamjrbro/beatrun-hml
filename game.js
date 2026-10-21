@@ -19,7 +19,8 @@ const characterChoice = { outfit: 'black', hair: 'blond', pants: 'sparkle', shoe
 try {
   const saved = JSON.parse(localStorage.getItem('beat-runner-character') || '{}');
   for (const key of Object.keys(choiceOptions)) {
-    if (choiceOptions[key].includes(saved?.[key])) characterChoice[key] = saved[key];
+    // Always open with blond hair; pink is an explicit choice for this visit.
+    if (key !== 'hair' && choiceOptions[key].includes(saved?.[key])) characterChoice[key] = saved[key];
   }
 } catch {}
 function selectCharacter(key, value) {

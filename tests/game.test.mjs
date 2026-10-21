@@ -6,7 +6,7 @@ const gradient = { addColorStop() {} };
 const context = new Proxy({}, { get: (_, key) => key === 'createLinearGradient' ? () => gradient : () => {}, set: () => true });
 const events = {};
 const elements = new Map();
-const storage = new Map();
+const storage = new Map([['beat-runner-character', JSON.stringify({hair: 'pink', outfit: 'white'})]]);
 function element(id) {
   if (!elements.has(id)) elements.set(id, { textContent: '', getContext: () => context,
     addEventListener: (type, fn) => { events[id + ':' + type] = fn; },
@@ -21,6 +21,7 @@ const scope = vm.createContext({ console, Math, performance: { now: () => 0 },
 for (const file of ['character.js', 'game.js']) vm.runInContext(readFileSync(new URL('../' + file, import.meta.url), 'utf8'), scope);
 const run = code => vm.runInContext(code, scope);
 assert.equal(run('characterChoice.hair'), 'blond', 'default hair stays blond');
+assert.equal(run('characterChoice.outfit'), 'white', 'other saved choices still restore');
 events['hair-pink:click']();
 events['outfit-orange:click']();
 events['pants-camo:click']();
