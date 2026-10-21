@@ -597,9 +597,12 @@ function drawStart() {
   ctx.fillStyle = '#c8fff0'; ctx.shadowColor = '#00ffc8'; ctx.shadowBlur = 22;
   ctx.fillText('BEAT RUNNER', w / 2, h * 0.19 + 10);
   ctx.shadowBlur = 0;
-  const avatarY = h * (compact ? 0.60 : short ? 0.40 : 0.44);
+  // Reserve the entire subtitle line before fitting the portrait above the menu.
+  const portraitTop = h * 0.19 + 38 + 20;
+  const portraitBottom = compact ? h - 72 : h * (short ? 0.54 : 0.58) - 12;
+  const avatarY = (portraitTop + portraitBottom) / 2 + 7;
   const avatarX = w * (compact ? 0.24 : 0.5);
-  const scale = Math.min(1.7, h / (short && !compact ? 480 : 400));
+  const scale = Math.max(0.1, Math.min(1.7, (portraitBottom - portraitTop) / 146));
   ctx.fillStyle = 'rgba(0,255,200,0.06)';
   ctx.strokeStyle = 'rgba(0,255,200,0.22)'; ctx.lineWidth = 1;
   ctx.beginPath(); ctx.arc(avatarX, avatarY - 7, scale * 73, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
