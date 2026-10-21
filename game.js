@@ -71,6 +71,8 @@ soundButton.addEventListener('click', () => {
   soundButton.setAttribute('aria-pressed', String(muted));
 });
 let spawnTimer  = 0;
+// A gentle first set, with one shared pace for the runner and incoming obstacles.
+function getRunSpeed() { return Math.min(8.5, 2.8 + (level - 1) * 0.45 + Math.min(frame / 3600, 1.5)); }
 
 /* ── PLAYER ── */
 const player = {
@@ -173,7 +175,7 @@ function spawnBeat() {
     size,
     type,
     rot: 0,
-    speed: 5 + level * 0.6,
+    speed: getRunSpeed(),
     color: type === 'diamond' ? '#ffaa00'
          : type === 'vinyl'   ? '#cc88ff'
          : '#ff44cc',
@@ -204,12 +206,12 @@ function addComboText(x, y, text, color) {
 /* ── UPDATE ── */
 function update() {
   frame++;
-  player.runFrame++;
+  player.runFrame += getRunSpeed() / 6;
 
   /* nível */
   level = 1 + Math.floor(score / 250);
   levelEl.textContent = level;
-  const spawnInterval = Math.max(38, 95 - level * 9);
+  const spawnInterval = Math.max(48, 130 - level * 7);
 
   /* spawn */
   spawnTimer++;
@@ -242,7 +244,7 @@ function update() {
   /* beats */
   for (let i = beats.length - 1; i >= 0; i--) {
     const b = beats[i];
-    b.x  -= b.speed + level * 0.35;
+    b.x  -= getRunSpeed();
     b.rot += 0.06;
 
     /* colisão (hitbox reduzida) */
@@ -306,7 +308,7 @@ function drawBackground() {
 
   /* grade perspectiva (chão) */
   const vanishY = h * 0.55;
-  const gridOff = (frame * 2) % 60;
+  const gridOff = (player.runFrame * 2) % 60;
   ctx.strokeStyle = 'rgba(0,255,200,0.06)';
   ctx.lineWidth = 1;
 
@@ -328,7 +330,7 @@ function drawBackground() {
   }
 
   /* estrelas */
-  const starSpeed = 0.5 + level * 0.3;
+  const starSpeed = getRunSpeed() / 7;
   stars.forEach(s => {
     s.x -= s.speed * starSpeed;
     if (s.x < 0) { s.x = w + 5; s.y = Math.random() * h * 0.55; }
@@ -564,7 +566,7 @@ function drawStart() {
   drawDJ(ctx, { x: w / 2, y: avatarY, scale, phase: performance.now() / 17 });
   ctx.textAlign = 'center';
   ctx.font = "12px 'Courier New'"; ctx.fillStyle = '#b5c8c5';
-  ctx.fillText('Mais de 10 anos no comando do som.', w / 2, h * 0.69);
+  ctx.fillText('Para sempre o DJ', w / 2, h * 0.69);
   _drawButton(w / 2, h * 0.78, 240, 50, 'SOLTA O PLAY');
   ctx.font = "12px 'Courier New'"; ctx.fillStyle = '#a4beb9';
   ctx.fillText(w < 500 ? 'Toque para pular. Duas vezes para voar.' : 'ESPAÇO / ↑ / TOQUE · PULO DUPLO', w / 2, h * 0.78 + 50);

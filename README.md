@@ -27,7 +27,9 @@ Beat Runner é um jogo web experimental feito em JavaScript puro, com foco em Ca
 - Trail e animação do personagem
 - Tela inicial e Game Over
 - Recorde salvo no navegador com `localStorage`
-- Personagem original em Canvas: cabelo descolorido curto, olhos verdes, cavanhaque, brincos, tatuagens estilizadas, corrente e jaqueta preta
+- Personagem original em Canvas: cabelo descolorido curto, olhos verdes, cavanhaque, brincos de prata, tatuagens estilizadas, polo básica preta e jeans com brilhos
+- Corrente de prata com pingente LUKETA e pulseira iced Cuban cravejada no braço esquerdo
+- Caminhada e obstáculos começam devagar e aceleram progressivamente, com limite de velocidade
 - Prévia ampliada do personagem na abertura
 - Botão para silenciar música e efeitos
 - Física com passo fixo de 60 Hz, independente da taxa de atualização da tela
