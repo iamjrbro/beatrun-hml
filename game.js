@@ -14,8 +14,8 @@ const levelEl = document.getElementById('level');
 const music   = document.getElementById('music');
 
 /* Character choices are validated before restoring browser preferences. */
-const choiceOptions = { outfit: ['black', 'white', 'neon'], pants: ['sparkle', 'plain'], shoes: ['sneakers', 'boots', 'nike'], view: ['front', 'profile'] };
-const characterChoice = { outfit: 'black', pants: 'sparkle', shoes: 'sneakers', view: 'front' };
+const choiceOptions = { outfit: ['black', 'white', 'neon', 'orange'], hair: ['blond', 'pink'], pants: ['sparkle', 'plain', 'camo'], shoes: ['sneakers', 'boots', 'nike'], view: ['front', 'profile'] };
+const characterChoice = { outfit: 'black', hair: 'blond', pants: 'sparkle', shoes: 'sneakers', view: 'front' };
 try {
   const saved = JSON.parse(localStorage.getItem('beat-runner-character') || '{}');
   for (const key of Object.keys(choiceOptions)) {
@@ -123,7 +123,7 @@ const player = {
 };
 
 const GRAVITY    = 0.65;
-const JUMP_FORCE = -15;
+const JUMP_FORCE = -13.5;
 
 function getGround() { return canvas.height - 145; }
 function getBeatY(size) { return getGround() + player.h / 2 + 6 - size; }
@@ -255,8 +255,10 @@ function update() {
   if (spawnTimer >= spawnInterval) { spawnTimer = 0; spawnBeat(); }
 
   /* física */
-  player.vy += GRAVITY;
-  player.y  += player.vy;
+  // Keep the jump arc aligned with the distance obstacles travel.
+  const jumpStep = getRunSpeed() / 6;
+  player.vy += GRAVITY * jumpStep;
+  player.y  += player.vy * jumpStep;
   const ground = getGround();
   if (player.y >= ground) {
     if (!player.onGround) player.squish = 0.9;

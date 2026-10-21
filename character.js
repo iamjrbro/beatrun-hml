@@ -1,4 +1,32 @@
 /* Original Canvas artwork, inspired by the reference photos. No photo assets required. */
+function characterColors(outfit, hair) {
+  const shirts = {
+    black: ['#24252d', '#50525d', '#24252d'],
+    white: ['#f4f3ef', '#bfc1c1', '#dedfdb'],
+    neon: ['#c1ef35', '#789b24', '#addb2e'],
+    orange: ['#ff7625', '#b54512', '#e85d17'],
+  };
+  const [shirt, seam, hood] = shirts[outfit] || shirts.black;
+  const [hairBase, hairLight, hairHighlight, hairShadow] = hair === 'pink'
+    ? ['#c66e96', '#f19fc8', '#ffd1e8', '#ae557f']
+    : ['#c2ae7e', '#e3cf9b', '#f2e1b7', '#b59c6b'];
+  return { shirt, seam, hood, hairBase, hairLight, hairHighlight, hairShadow };
+}
+
+function drawCamouflage(ctx, x, y, w, h) {
+  ctx.save(); ctx.beginPath(); ctx.roundRect(x, y, w, h, 5); ctx.clip();
+  ctx.fillStyle = '#636b47'; ctx.fillRect(x, y, w, h);
+  const colors = ['#323c30', '#8e9268', '#a89a70', '#424d36'];
+  for (let i = 0; i < 9; i++) {
+    const px = x - 3 + (i * 11 % 24), py = y - 3 + (i * 7 % 32);
+    ctx.fillStyle = colors[i % colors.length]; ctx.beginPath();
+    ctx.moveTo(px, py); ctx.lineTo(px + 7, py - 1); ctx.lineTo(px + 10, py + 3);
+    ctx.lineTo(px + 6, py + 5); ctx.lineTo(px + 5, py + 9);
+    ctx.lineTo(px - 1, py + 7); ctx.lineTo(px - 4, py + 3); ctx.closePath(); ctx.fill();
+  }
+  ctx.restore();
+}
+
 function drawNeckTattoo(ctx, x, y, scale) {
   // Soft abstract ink across the neck; upper strokes tuck beneath the jaw.
   ctx.save(); ctx.translate(x, y); ctx.scale(scale, scale);
@@ -57,11 +85,11 @@ function drawShoes(ctx, shoes, x, y) {
   ctx.restore();
 }
 
-function drawDJProfile(ctx, { x, y, scale, phase, running, airborne, outfit, pants, shoes }) {
+function drawDJProfile(ctx, { x, y, scale, phase, running, airborne, outfit, pants, shoes, hair }) {
   ctx.save(); ctx.translate(x, y); ctx.scale(scale, scale);
   ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-  const shirt = outfit === 'white' ? '#f4f3ef' : outfit === 'neon' ? '#c1ef35' : '#24252d';
-  const seam = outfit === 'white' ? '#bfc1c1' : outfit === 'neon' ? '#789b24' : '#50525d';
+  const { shirt, seam, hood, hairBase, hairLight, hairHighlight, hairShadow } = characterColors(outfit, hair);
+  const hoodie = outfit === 'neon' || outfit === 'orange';
   const box = (x, y, w, h, r, color) => {
     ctx.fillStyle = color; ctx.beginPath(); ctx.roundRect(x, y, w, h, r); ctx.fill();
   };
@@ -77,9 +105,10 @@ function drawDJProfile(ctx, { x, y, scale, phase, running, airborne, outfit, pan
     ctx.save(); ctx.translate(side * 4, 20);
     ctx.rotate(airborne ? side * 0.55 : side * swing * 0.55);
     box(-11, -1, 23, 31, 5, side < 0 ? '#1e2028' : '#30333c');
+    if (pants === 'camo') drawCamouflage(ctx, -11, -1, 23, 31);
     line([[-7, 4], [-8, 24]], '#5c606a', 0.8);
     line([[1, 7], [8, 8]], '#545861', 1);
-    for (let i = 0; pants !== 'plain' && i < 7; i++) {
+    for (let i = 0; pants === 'sparkle' && i < 7; i++) {
       const px = -6 + (i * 5 % 14), py = 3 + (i * 7 % 22);
       line([[px - 0.8, py], [px + 0.8, py]], '#dce7f8', 0.7);
       if (i % 3 === 0) line([[px, py - 1.5], [px, py + 1.5]], '#ffffff', 0.7);
@@ -88,7 +117,7 @@ function drawDJProfile(ctx, { x, y, scale, phase, running, airborne, outfit, pan
   });
   // Right arm on the far side: bracelet follows that wrist in profile as well.
   ctx.save(); ctx.translate(8, -7); ctx.rotate(airborne ? -0.7 : -0.45 + swing * 0.5);
-  box(-4, 6, 9, 24, 4, outfit === 'neon' ? shirt : '#cf997e');
+  box(-4, 6, 9, 24, 4, hoodie ? shirt : '#cf997e');
   box(-6, -3, 12, 16, 4, shirt);
   oval(0, 29, 5, 6, '#cf997e');
   drawBracelet(ctx, 0, 25);
@@ -102,8 +131,8 @@ function drawDJProfile(ctx, { x, y, scale, phase, running, airborne, outfit, pan
   line([[-5, -23], [-2, -16], [-5, -10]], '#595057', 1.2);
   if (outfit === 'black') line([[-4, -10], [6, -4], [12, -10]], seam, 2);
   if (outfit === 'white') line([[-6, -8], [3, -5], [12, -9]], seam, 1.2);
-  if (outfit === 'neon') {
-    box(-19, -17, 13, 17, 6, '#addb2e');
+  if (hoodie) {
+    box(-19, -17, 13, 17, 6, hood);
     line([[-16, -14], [-14, -4], [-5, -3]], seam, 1.5);
   }
   // Silver chain hangs forward with a narrower nameplate at this angle.
@@ -115,9 +144,9 @@ function drawDJProfile(ctx, { x, y, scale, phase, running, airborne, outfit, pan
   ctx.fillStyle = '#ffffff'; ctx.fillText('LUKETA', 0, 0); ctx.restore();
   // Left arm faces the viewer in a right-facing profile.
   ctx.save(); ctx.translate(-7, -7); ctx.rotate(airborne ? -0.65 : -swing * 0.5);
-  box(-5, 6, 10, 24, 4, outfit === 'neon' ? shirt : '#dfac8d');
+  box(-5, 6, 10, 24, 4, hoodie ? shirt : '#dfac8d');
   box(-7, -3, 14, 16, 4, shirt); line([[-6, 11], [6, 11]], seam);
-  if (outfit !== 'neon') line([[-3, 16], [2, 19], [-2, 23]], '#6a6369', 1.2);
+  if (!hoodie) line([[-3, 16], [2, 19], [-2, 23]], '#6a6369', 1.2);
   oval(0, 29, 5, 6, '#dfac8d');
   ctx.restore();
   // Side silhouette with short crop, forehead, defined nose, lips and rounded chin.
@@ -130,16 +159,16 @@ function drawDJProfile(ctx, { x, y, scale, phase, running, airborne, outfit, pan
   ctx.quadraticCurveTo(19, -17, 10, -17); ctx.quadraticCurveTo(-1, -17, -8, -27);
   ctx.lineTo(-15, -33); ctx.closePath(); ctx.fill();
   // Tight blond crop follows the skull, with a faded side above the ear.
-  ctx.fillStyle = '#c2ae7e'; ctx.beginPath();
+  ctx.fillStyle = hairBase; ctx.beginPath();
   ctx.moveTo(-17, -40); ctx.bezierCurveTo(-23, -67, 14, -70, 18, -52);
   ctx.lineTo(13, -51); ctx.lineTo(7, -47); ctx.lineTo(-3, -42); ctx.lineTo(-7, -35);
   ctx.closePath(); ctx.fill();
-  ctx.fillStyle = '#e3cf9b'; ctx.beginPath();
+  ctx.fillStyle = hairLight; ctx.beginPath();
   ctx.moveTo(-16, -52); ctx.bezierCurveTo(-16, -66, 10, -68, 17, -54);
   ctx.lineTo(6, -54); ctx.lineTo(-10, -49); ctx.closePath(); ctx.fill();
   for (let i = 0; i < 18; i++) {
     const px = -12 + (i * 7 % 25), py = -59 + (i * 3 % 7);
-    line([[px, py + 1.5], [px + 1.2, py]], i % 3 ? '#f2e1b7' : '#b59c6b', 0.8);
+    line([[px, py + 1.5], [px + 1.2, py]], i % 3 ? hairHighlight : hairShadow, 0.8);
   }
   oval(-6, -36, 4.8, 6.4, '#d29a80');
   line([[-8, -38], [-5, -40], [-3, -36], [-6, -33]], '#ae7b6b', 0.9);
@@ -154,10 +183,10 @@ function drawDJProfile(ctx, { x, y, scale, phase, running, airborne, outfit, pan
   ctx.restore();
 }
 
-function drawDJ(ctx, { x, y, scale = 1, phase = 0, running = false, airborne = false, outfit = 'black', pants = 'sparkle', shoes = 'sneakers', view = 'front' }) {
-  if (view === 'profile') return drawDJProfile(ctx, { x, y, scale, phase, running, airborne, outfit, pants, shoes });
-  const shirt = outfit === 'white' ? '#f4f3ef' : outfit === 'neon' ? '#c1ef35' : '#202129';
-  const seam = outfit === 'white' ? '#c9c9c6' : outfit === 'neon' ? '#769d24' : '#43444c';
+function drawDJ(ctx, { x, y, scale = 1, phase = 0, running = false, airborne = false, outfit = 'black', pants = 'sparkle', shoes = 'sneakers', hair = 'blond', view = 'front' }) {
+  if (view === 'profile') return drawDJProfile(ctx, { x, y, scale, phase, running, airborne, outfit, pants, shoes, hair });
+  const { shirt, seam, hood, hairBase, hairLight, hairHighlight, hairShadow } = characterColors(outfit, hair);
+  const hoodie = outfit === 'neon' || outfit === 'orange';
   ctx.save();
   ctx.translate(x, y);
   ctx.scale(scale, scale);
@@ -185,10 +214,11 @@ function drawDJ(ctx, { x, y, scale = 1, phase = 0, running = false, airborne = f
     ctx.save(); ctx.translate(side * 10, 21);
     ctx.rotate(airborne ? side * -0.35 : swing * side * 0.35);
     shape(-11, -2, 23, 31, 5, side < 0 ? '#20222a' : '#30333c');
+    if (pants === 'camo') drawCamouflage(ctx, -11, -2, 23, 31);
     line([[2, 5], [1, 22]], '#626670', 0.8);
     line([[-6, 1], [-6, 23]], '#14161d', 0.8);
     line([[-4, 5], [4, 6]], '#484c57', 1.5);
-    for (let i = 0; pants !== 'plain' && i < 9; i++) {
+    for (let i = 0; pants === 'sparkle' && i < 9; i++) {
       const dx = -5 + (i * 7 % 12), dy = 2 + (i * 11 % 21);
       oval(dx, dy, 0.65, 0.65, '#cbd7e5');
       if (i % 3 === 0) sparkle(dx, dy, 1.4);
@@ -207,11 +237,11 @@ function drawDJ(ctx, { x, y, scale = 1, phase = 0, running = false, airborne = f
   [-1, 1].forEach(side => {
     ctx.save(); ctx.translate(side * 22, -8);
     ctx.rotate(airborne ? side * -0.65 : -swing * side * 0.38);
-    shape(-5, 7, 10, 22, 4, outfit === 'neon' ? shirt : '#dfac8d');
+    shape(-5, 7, 10, 22, 4, hoodie ? shirt : '#dfac8d');
     shape(-7, -2, 14, 15, 4, shirt);
     line([[-6, 11], [6, 11]], seam);
     // Stylized ink on the visible forearms.
-    if (outfit !== 'neon') line([[-3, 16], [2, 18], [-2, 21], [3, 23]], '#777177', 1.1);
+    if (!hoodie) line([[-3, 16], [2, 18], [-2, 21], [3, 23]], '#777177', 1.1);
     oval(0, 28, 5.7, 6.2, '#dfac8d');
     line([[-3, 26], [1, 30], [3, 26]], '#67646b', 1.3);
     // Front view: his anatomical right wrist is on the viewer's left.
@@ -226,7 +256,7 @@ function drawDJ(ctx, { x, y, scale = 1, phase = 0, running = false, airborne = f
     line([[-11, -11], [-3, -5], [-7, -1], [-14, -8]], '#666771', 1.3);
     line([[11, -11], [3, -5], [7, -1], [14, -8]], '#666771', 1.3);
     oval(0, -2, 0.65, 0.65, '#b7bec9'); oval(0, 2, 0.65, 0.65, '#b7bec9');
-  } else if (outfit === 'neon') {
+  } else if (hoodie) {
     line([[-13, -13], [-17, -5], [-7, -2], [0, -5], [7, -2], [17, -5], [13, -13]], seam, 2.5);
     line([[-5, -2], [-6, 9]], '#e8f8be', 1); line([[5, -2], [6, 9]], '#e8f8be', 1);
   } else {
@@ -256,11 +286,11 @@ function drawDJ(ctx, { x, y, scale = 1, phase = 0, running = false, airborne = f
   ctx.moveTo(-21, -46); ctx.bezierCurveTo(-23, -66, 22, -68, 21, -46);
   ctx.lineTo(20, -31); ctx.bezierCurveTo(18, -19, 10, -16, 0, -16);
   ctx.bezierCurveTo(-10, -16, -18, -21, -20, -31); ctx.closePath(); ctx.fill();
-  shape(-21, -64, 42, 17, [17, 17, 3, 3], '#c1ad79');
-  shape(-18, -65, 36, 12, [14, 14, 2, 2], '#dfcd9b');
+  shape(-21, -64, 42, 17, [17, 17, 3, 3], hairBase);
+  shape(-18, -65, 36, 12, [14, 14, 2, 2], hairLight);
   for (let i = 0; i < 24; i++) {
     const x = -15 + (i * 7 % 30), y = -60 + (i * 3 % 8);
-    line([[x, y + 2], [x + 1.6, y]], i % 3 ? '#f6e4b7' : '#b79d66', 0.9);
+    line([[x, y + 2], [x + 1.6, y]], i % 3 ? hairHighlight : hairShadow, 0.9);
   }
   // Strong brows, green irises, small highlights.
   [-1, 1].forEach(side => {

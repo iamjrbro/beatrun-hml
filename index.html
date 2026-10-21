@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Beat Runner</title>
-  <link rel="stylesheet" href="style.css?v=20261021-6">
+  <link rel="stylesheet" href="style.css?v=20261021-10">
 </head>
 <body>
   <canvas id="game" tabindex="0" aria-label="Beat Runner: use espaço, seta para cima ou toque para pular os obstáculos musicais. Duplo pulo disponível."></canvas>
@@ -16,11 +16,18 @@
       <button id="outfit-black" type="button" aria-pressed="true">Polo preta</button>
       <button id="outfit-white" type="button" aria-pressed="false">Branca lisa</button>
       <button id="outfit-neon" type="button" aria-pressed="false">Moletom neon</button>
+      <button id="outfit-orange" type="button" aria-pressed="false">Moletom laranja</button>
+    </div>
+    <div class="choice-row" role="group" aria-label="Cabelo">
+      <span>CABELO</span>
+      <button id="hair-blond" type="button" aria-pressed="true">Loiro</button>
+      <button id="hair-pink" type="button" aria-pressed="false">Rosa</button>
     </div>
     <div class="choice-row" role="group" aria-label="Calça">
       <span>JEANS</span>
       <button id="pants-sparkle" type="button" aria-pressed="true">Com brilhos</button>
       <button id="pants-plain" type="button" aria-pressed="false">Liso</button>
+      <button id="pants-camo" type="button" aria-pressed="false">Militar</button>
     </div>
     <div class="choice-row" role="group" aria-label="Calçado">
       <span>PÉS</span>
@@ -59,7 +66,7 @@
     <source src="music.mp3" type="audio/mpeg">
   </audio>
 
-  <script src="character.js?v=20261021-7"></script>
-  <script src="game.js?v=20261021-8"></script>
+  <script src="character.js?v=20261021-10"></script>
+  <script src="game.js?v=20261021-10"></script>
 </body>
 </html>

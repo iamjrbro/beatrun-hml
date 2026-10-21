@@ -94,7 +94,9 @@ html, body {
 }
 #wardrobe { display: grid; gap: 5px; width: 100%; flex-shrink: 0; }
 .choice-row { display: flex; align-items: center; gap: 5px; }
-.choice-row > span { width: 37px; flex-shrink: 0; color: #9cb4b1; font-size: 10px; }
+.choice-row[aria-label="Roupa"] { display: grid; grid-template-columns: 37px repeat(2, minmax(0, 1fr)); }
+.choice-row[aria-label="Roupa"] > span { grid-row: span 2; }
+.choice-row > span { width: 37px; flex-shrink: 0; color: #9cb4b1; font-size: 9px; }
 .choice-row button {
   flex: 1; min-height: 32px; padding: 5px 7px; border-radius: 8px;
   border: 1px solid #3c5554; background: #101b25; color: #c9d4d8;
@@ -115,6 +117,13 @@ button:focus-visible { outline: 2px solid #ffffff; outline-offset: 3px; }
 .start-help, #start-best { flex-shrink: 0; text-align: center; font-size: 11px; color: #a4beb9; }
 #start-best { color: #ccbb87; }
 #start-controls[hidden], #wardrobe[hidden], #play[hidden], #change-look[hidden] { display: none; }
+@media (min-width: 600px) {
+  #start-controls { width: min(560px, calc(100% - 24px)); }
+  #wardrobe { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 12px; }
+  .choice-row[aria-label="Roupa"] { grid-column: 1 / -1; grid-template-columns: 37px repeat(4, minmax(0, 1fr)); }
+  .choice-row[aria-label="Roupa"] > span { grid-row: auto; }
+  .choice-row button { min-width: 0; }
+}
 @media (max-height: 700px) {
   #start-controls { top: 54%; }
   #start-best { display: none; }
@@ -124,6 +133,7 @@ button:focus-visible { outline: 2px solid #ffffff; outline-offset: 3px; }
 }
 @media (max-height: 500px) and (min-width: 600px) {
   #start-controls { left: 65%; top: 32%; width: min(360px, 48vw); }
+  #wardrobe { grid-template-columns: minmax(0, 1fr); gap: 5px; }
   .start-help { display: none; }
 }
 .hud-box { background: rgba(10, 25, 30, 0.8); border-radius: 14px; }
