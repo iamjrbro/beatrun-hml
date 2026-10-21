@@ -26,7 +26,11 @@ Beat Runner é um jogo web experimental feito em JavaScript puro, com foco em Ca
 - Partículas e efeitos visuais
 - Trail e animação do personagem
 - Tela inicial e Game Over
-- High score durante a sessão
+- Recorde salvo no navegador com `localStorage`
+- Personagem original em Canvas: cabelo descolorido curto, olhos verdes, cavanhaque, brincos, tatuagens estilizadas, corrente e jaqueta preta
+- Prévia ampliada do personagem na abertura
+- Botão para silenciar música e efeitos
+- Física com passo fixo de 60 Hz, independente da taxa de atualização da tela
 - Efeitos sonoros com Web Audio API
 - Música de fundo com HTML5 Audio
 - Controles para teclado e dispositivos touch
@@ -58,6 +62,7 @@ beatrun/
 - `index.html` — estrutura da página, HUD e elemento de áudio
 - `style.css` — layout e estilos da interface
 - `game.js` — lógica do jogo, física, input, obstáculos, áudio e renderização
+- `character.js` — desenho original e animação do personagem, sem carregar fotos ou imagens externas
 - `music.mp3` — música de fundo
 
 ## Arquitetura
@@ -129,8 +134,6 @@ O código possui tratamento para `AudioContext`/`webkitAudioContext`, eventos de
 
 ## Roadmap
 
-- Persistir o high score com `localStorage`
-- Adicionar controle de volume e mute
 - Centralizar constantes de gameplay
 - Isolar a detecção de colisão
 - Adicionar testes para regras de gameplay
@@ -138,6 +141,10 @@ O código possui tratamento para `AudioContext`/`webkitAudioContext`, eventos de
 - Otimizar partículas e efeitos para dispositivos móveis
 - Adicionar acessibilidade e mais opções de controle
 - Modularizar a lógica JavaScript conforme o projeto crescer
+
+## Verificação
+
+Com Node.js 24 ou superior, execute `node tests/game.test.mjs` para verificar renderização básica, pulo duplo, aterrissagem, colisão, pontuação, recorde, redimensionamento e áudio. A renderização final também deve ser conferida no navegador, em desktop e celular.
 
 ## Autor
 

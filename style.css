@@ -66,3 +66,28 @@ html, body {
   text-shadow: 0 0 10px #00ffc8;
   margin-top: 2px;
 }
+
+#sound {
+  position: fixed;
+  right: max(18px, env(safe-area-inset-right));
+  bottom: max(18px, env(safe-area-inset-bottom));
+  z-index: 20;
+  min-height: 44px;
+  padding: 10px 14px;
+  color: #bce9de;
+  background: #111e25;
+  border: 1px solid #41645d;
+  border-radius: 24px;
+  font: 12px 'Courier New', monospace;
+  cursor: pointer;
+}
+#sound:focus-visible { outline: 2px solid #00ffc8; outline-offset: 4px; }
+#hud { top: max(14px, env(safe-area-inset-top)); }
+#hud[hidden] { display: none; }
+.hud-box { background: rgba(10, 25, 30, 0.8); border-radius: 14px; }
+@media (max-width: 480px) {
+  #hud { padding: 0 14px; gap: 8px; }
+  .hud-box { min-width: 0; padding: 8px 14px; }
+  .hud-label { font-size: 10px; }
+  .hud-val { font-size: 20px; }
+}

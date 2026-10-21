@@ -7,8 +7,9 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <canvas id="game"></canvas>
-  <div id="hud">
+  <canvas id="game" aria-label="Beat Runner: use espaço, seta para cima ou toque para pular os obstáculos musicais. Duplo pulo disponível."></canvas>
+  <button id="sound" type="button" aria-label="Silenciar áudio" aria-pressed="false">SOM ON</button>
+  <div id="hud" hidden>
     <div class="hud-box">
       <span class="hud-label">SCORE</span>
       <span class="hud-val" id="score">0</span>
@@ -28,6 +29,7 @@
     <source src="music.mp3" type="audio/mpeg">
   </audio>
 
+  <script src="character.js"></script>
   <script src="game.js"></script>
 </body>
 </html>
