@@ -16,6 +16,18 @@ function drawNeckTattoo(ctx, x, y, scale) {
   ctx.restore();
 }
 
+function drawBracelet(ctx, x, y) {
+  ctx.save(); ctx.translate(x, y);
+  ctx.fillStyle = '#939eaf'; ctx.beginPath(); ctx.roundRect(-6, -2, 12, 5, 1.5); ctx.fill();
+  for (let i = -4; i <= 4; i += 2) {
+    ctx.fillStyle = '#e8effb'; ctx.beginPath(); ctx.ellipse(i, 0.5, 1.4, 1.7, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(i, 0, 0.6, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 0.7;
+  ctx.beginPath(); ctx.moveTo(1, -2); ctx.lineTo(5, -2); ctx.moveTo(3, -4); ctx.lineTo(3, 0); ctx.stroke();
+  ctx.restore();
+}
+
 function drawShoes(ctx, shoes, x, y) {
   ctx.save(); ctx.translate(x, y);
   const box = (x, y, w, h, r, color) => {
@@ -31,6 +43,15 @@ function drawShoes(ctx, shoes, x, y) {
       ctx.beginPath(); ctx.moveTo(10, i * 2); ctx.lineTo(16, i * 2 + 1); ctx.stroke();
     }
     for (let i = 1; i < 26; i += 4) box(i, 12, 2, 1.3, 0, '#30271f');
+  } else if (shoes === 'nike') {
+    box(0, 1, 27, 10, 5, '#f6f8fc'); box(0, 9, 27, 3, 1, '#d2d9e3');
+    ctx.fillStyle = '#a6b2c3'; ctx.beginPath();
+    ctx.moveTo(5, 5); ctx.quadraticCurveTo(4, 10, 11, 7);
+    ctx.lineTo(23, 3); ctx.lineTo(10, 6); ctx.quadraticCurveTo(7, 7, 5, 5); ctx.fill();
+    ctx.strokeStyle = '#bcc6d3'; ctx.lineWidth = 0.7;
+    for (let i = 0; i < 3; i++) {
+      ctx.beginPath(); ctx.moveTo(12 + i * 2, 2); ctx.lineTo(15 + i * 2, 3.5); ctx.stroke();
+    }
   } else {
     box(0, 1, 26, 10, 5, '#14151e'); box(0, 9, 26, 3, 1, '#d9dce3');
     ctx.strokeStyle = '#9299a6'; ctx.lineWidth = 1.2;
@@ -39,7 +60,7 @@ function drawShoes(ctx, shoes, x, y) {
   ctx.restore();
 }
 
-function drawDJProfile(ctx, { x, y, scale, phase, running, airborne, outfit, shoes }) {
+function drawDJProfile(ctx, { x, y, scale, phase, running, airborne, outfit, pants, shoes }) {
   ctx.save(); ctx.translate(x, y); ctx.scale(scale, scale);
   ctx.lineCap = 'round'; ctx.lineJoin = 'round';
   const shirt = outfit === 'white' ? '#f4f3ef' : outfit === 'neon' ? '#c1ef35' : '#24252d';
@@ -61,13 +82,20 @@ function drawDJProfile(ctx, { x, y, scale, phase, running, airborne, outfit, sho
     box(-11, -1, 23, 31, 5, side < 0 ? '#1e2028' : '#30333c');
     line([[-7, 4], [-8, 24]], '#5c606a', 0.8);
     line([[1, 7], [8, 8]], '#545861', 1);
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; pants !== 'plain' && i < 7; i++) {
       const px = -6 + (i * 5 % 14), py = 3 + (i * 7 % 22);
       line([[px - 0.8, py], [px + 0.8, py]], '#dce7f8', 0.7);
       if (i % 3 === 0) line([[px, py - 1.5], [px, py + 1.5]], '#ffffff', 0.7);
     }
     drawShoes(ctx, shoes, -10, 22); ctx.restore();
   });
+  // Right arm on the far side: bracelet follows that wrist in profile as well.
+  ctx.save(); ctx.translate(8, -7); ctx.rotate(airborne ? -0.7 : -0.45 + swing * 0.5);
+  box(-4, 6, 9, 24, 4, outfit === 'neon' ? shirt : '#cf997e');
+  box(-6, -3, 12, 16, 4, shirt);
+  oval(0, 29, 5, 6, '#cf997e');
+  drawBracelet(ctx, 0, 25);
+  ctx.restore();
   box(-17, -15, 34, 42, 9, shirt);
   line([[-13, 2], [-13, 24]], seam);
   line([[-13, 25], [13, 25]], seam);
@@ -94,9 +122,6 @@ function drawDJProfile(ctx, { x, y, scale, phase, running, airborne, outfit, sho
   box(-7, -3, 14, 16, 4, shirt); line([[-6, 11], [6, 11]], seam);
   if (outfit !== 'neon') line([[-3, 16], [2, 19], [-2, 23]], '#6a6369', 1.2);
   oval(0, 29, 5, 6, '#dfac8d');
-  box(-6, 23, 12, 5, 1.5, '#a7b1c2');
-  for (let i = -4; i <= 4; i += 2) oval(i, 25, 1.1, 1.5, '#eef5ff');
-  line([[2, 22], [2, 27]], '#ffffff', 0.7); line([[0, 24], [4, 24]], '#ffffff', 0.7);
   ctx.restore();
   // Side silhouette with short crop, forehead, defined nose, lips and rounded chin.
   const skin = ctx.createLinearGradient(-18, -40, 25, -30);
@@ -132,8 +157,8 @@ function drawDJProfile(ctx, { x, y, scale, phase, running, airborne, outfit, sho
   ctx.restore();
 }
 
-function drawDJ(ctx, { x, y, scale = 1, phase = 0, running = false, airborne = false, outfit = 'black', shoes = 'sneakers', view = 'front' }) {
-  if (view === 'profile') return drawDJProfile(ctx, { x, y, scale, phase, running, airborne, outfit, shoes });
+function drawDJ(ctx, { x, y, scale = 1, phase = 0, running = false, airborne = false, outfit = 'black', pants = 'sparkle', shoes = 'sneakers', view = 'front' }) {
+  if (view === 'profile') return drawDJProfile(ctx, { x, y, scale, phase, running, airborne, outfit, pants, shoes });
   const shirt = outfit === 'white' ? '#f4f3ef' : outfit === 'neon' ? '#c1ef35' : '#202129';
   const seam = outfit === 'white' ? '#c9c9c6' : outfit === 'neon' ? '#769d24' : '#43444c';
   ctx.save();
@@ -166,7 +191,7 @@ function drawDJ(ctx, { x, y, scale = 1, phase = 0, running = false, airborne = f
     line([[2, 5], [1, 22]], '#626670', 0.8);
     line([[-6, 1], [-6, 23]], '#14161d', 0.8);
     line([[-4, 5], [4, 6]], '#484c57', 1.5);
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; pants !== 'plain' && i < 9; i++) {
       const dx = -5 + (i * 7 % 12), dy = 2 + (i * 11 % 21);
       oval(dx, dy, 0.65, 0.65, '#cbd7e5');
       if (i % 3 === 0) sparkle(dx, dy, 1.4);
@@ -192,15 +217,8 @@ function drawDJ(ctx, { x, y, scale = 1, phase = 0, running = false, airborne = f
     if (outfit !== 'neon') line([[-3, 16], [2, 18], [-2, 21], [3, 23]], '#777177', 1.1);
     oval(0, 28, 5.7, 6.2, '#dfac8d');
     line([[-3, 26], [1, 30], [3, 26]], '#67646b', 1.3);
-    // Front view: his anatomical left wrist is on the viewer's right.
-    if (side > 0) {
-      shape(-6, 23, 12, 5, 1.8, '#929caa');
-      for (let i = -4; i <= 4; i += 2) {
-        oval(i, 25.5, 1.4, 1.7, '#e6eaf2');
-        oval(i, 25, 0.6, 0.65, '#ffffff');
-      }
-      sparkle(3, 24, 2); sparkle(-4, 27, 1.3);
-    }
+    // Front view: his anatomical right wrist is on the viewer's left.
+    if (side < 0) drawBracelet(ctx, 0, 25);
     ctx.restore();
   });
   // Neck tattoos remain visible above the collar.

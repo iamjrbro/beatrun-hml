@@ -85,7 +85,7 @@ html, body {
 #hud { top: max(14px, env(safe-area-inset-top)); }
 #hud[hidden] { display: none; }
 #wardrobe {
-  position: fixed; top: 62%; left: 50%; transform: translateX(-50%);
+  position: fixed; top: 58%; left: 50%; transform: translateX(-50%);
   width: min(410px, calc(100% - 24px)); z-index: 15;
   display: grid; gap: 5px;
 }
@@ -104,9 +104,12 @@ button:focus-visible { outline: 2px solid #ffffff; outline-offset: 3px; }
   border: 1px solid #00ffc8; background: #103b37; color: #baffed;
   font: bold 15px 'Courier New', monospace; cursor: pointer;
 }
-#play { top: 87%; width: 240px; box-shadow: 0 0 20px #00ffc822; }
+#play { top: 90%; width: 240px; box-shadow: 0 0 20px #00ffc822; }
 #change-look { top: calc(50% + 95px); font-size: 11px; min-width: 230px; }
 #wardrobe[hidden], #play[hidden], #change-look[hidden] { display: none; }
+@media (max-width: 480px) and (min-height: 600px) {
+  #play { top: 85%; }
+}
 @media (max-height: 500px) and (min-width: 600px) {
   #wardrobe { left: 65%; top: 32%; width: min(360px, 48vw); }
   #play { left: 65%; top: 84%; }

@@ -14,8 +14,8 @@ const levelEl = document.getElementById('level');
 const music   = document.getElementById('music');
 
 /* Character choices are validated before restoring browser preferences. */
-const choiceOptions = { outfit: ['black', 'white', 'neon'], shoes: ['sneakers', 'boots'], view: ['front', 'profile'] };
-const characterChoice = { outfit: 'black', shoes: 'sneakers', view: 'front' };
+const choiceOptions = { outfit: ['black', 'white', 'neon'], pants: ['sparkle', 'plain'], shoes: ['sneakers', 'boots', 'nike'], view: ['front', 'profile'] };
+const characterChoice = { outfit: 'black', pants: 'sparkle', shoes: 'sneakers', view: 'front' };
 try {
   const saved = JSON.parse(localStorage.getItem('beat-runner-character') || '{}');
   for (const key of Object.keys(choiceOptions)) {
@@ -584,6 +584,7 @@ function drawComboTexts() {
 function drawStart() {
   const w = canvas.width, h = canvas.height;
   const compact = h < 500 && w >= 600;
+  const playY = h * (w <= 480 && h >= 600 ? 0.85 : 0.90);
   ctx.textAlign = 'center';
   ctx.fillStyle = '#a4beb9';
   ctx.font = "11px 'Courier New'";
@@ -592,9 +593,9 @@ function drawStart() {
   ctx.fillStyle = '#c8fff0'; ctx.shadowColor = '#00ffc8'; ctx.shadowBlur = 22;
   ctx.fillText('BEAT RUNNER', w / 2, h * 0.19 + 10);
   ctx.shadowBlur = 0;
-  const avatarY = h * (compact ? 0.60 : 0.46);
+  const avatarY = h * (compact ? 0.60 : 0.44);
   const avatarX = w * (compact ? 0.24 : 0.5);
-  const scale = Math.min(1.9, h / 360);
+  const scale = Math.min(1.7, h / 400);
   ctx.fillStyle = 'rgba(0,255,200,0.06)';
   ctx.strokeStyle = 'rgba(0,255,200,0.22)'; ctx.lineWidth = 1;
   ctx.beginPath(); ctx.arc(avatarX, avatarY - 7, scale * 73, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
@@ -604,10 +605,10 @@ function drawStart() {
   ctx.fillText('Para sempre o DJ', w / 2, h * 0.19 + 38);
 
   ctx.font = "12px 'Courier New'"; ctx.fillStyle = '#a4beb9';
-  if (!compact) ctx.fillText(w < 500 ? 'Toque para pular. Duas vezes para voar.' : 'ESPAÇO / ↑ / TOQUE · PULO DUPLO', w / 2, h * 0.87 + 40);
+  if (!compact) ctx.fillText(w < 500 ? 'TOQUE PARA PULAR · PULO DUPLO' : 'ESPAÇO / ↑ / TOQUE · PULO DUPLO', w / 2, playY + 36);
   if (!compact) {
     ctx.fillStyle = '#ccbb87';
-    ctx.fillText('SEU MELHOR SET: ' + highScore + ' PTS', w / 2, h * 0.87 + 62);
+    if (h > 800 || (w > 480 && h > 600)) ctx.fillText('SEU MELHOR SET: ' + highScore + ' PTS', w / 2, playY + 56);
   }
   ctx.textAlign = 'left';
 }
