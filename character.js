@@ -1,18 +1,15 @@
 /* Original Canvas artwork, inspired by the reference photos. No photo assets required. */
 function drawNeckTattoo(ctx, x, y, scale) {
-  // Small black silhouette of the reference's figure, layered dress and parasol.
+  // Soft abstract ink across the neck; upper strokes tuck beneath the jaw.
   ctx.save(); ctx.translate(x, y); ctx.scale(scale, scale);
-  ctx.fillStyle = '#242126'; ctx.strokeStyle = '#242126'; ctx.lineWidth = 0.8;
-  ctx.beginPath(); ctx.moveTo(-6, 3); ctx.lineTo(1, -1); ctx.lineTo(8, 3);
-  ctx.quadraticCurveTo(0, 1, -6, 3); ctx.fill();
-  ctx.beginPath(); ctx.moveTo(1, 0); ctx.lineTo(1, 9); ctx.stroke();
-  ctx.beginPath(); ctx.arc(-1, 5, 1.4, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.moveTo(-3, 7); ctx.lineTo(1, 7); ctx.lineTo(5, 15);
-  ctx.lineTo(-6, 15); ctx.closePath(); ctx.fill();
-  ctx.strokeStyle = '#817369'; ctx.lineWidth = 0.5;
-  for (let i = 0; i < 3; i++) {
-    ctx.beginPath(); ctx.moveTo(-3 - i, 9 + i * 2); ctx.lineTo(0, 10 + i * 2); ctx.lineTo(2 + i, 9 + i * 2); ctx.stroke();
+  ctx.strokeStyle = '#655a59'; ctx.lineWidth = 0.85; ctx.globalAlpha = 0.65;
+  for (let i = 0; i < 5; i++) {
+    ctx.beginPath(); ctx.moveTo(-8, -3 + i * 3.4);
+    ctx.bezierCurveTo(-4, 2 + i * 2.5, 3, -3 + i * 3, 8, 1 + i * 3.4); ctx.stroke();
   }
+  ctx.lineWidth = 0.6;
+  ctx.beginPath(); ctx.moveTo(-6, -4); ctx.quadraticCurveTo(-1, 5, -5, 14);
+  ctx.moveTo(5, -4); ctx.quadraticCurveTo(1, 4, 6, 14); ctx.stroke();
   ctx.restore();
 }
 
@@ -99,9 +96,9 @@ function drawDJProfile(ctx, { x, y, scale, phase, running, airborne, outfit, pan
   box(-17, -15, 34, 42, 9, shirt);
   line([[-13, 2], [-13, 24]], seam);
   line([[-13, 25], [13, 25]], seam);
-  // Neck and a compressed glimpse of the front tattoo in profile.
+  // Abstract ink stays on the neck and extends beneath the jaw.
   box(-7, -27, 17, 22, 4, '#d6a084');
-  drawNeckTattoo(ctx, 7, -17, 0.58);
+  drawNeckTattoo(ctx, 1, -22, 0.7);
   line([[-5, -23], [-2, -16], [-5, -10]], '#595057', 1.2);
   if (outfit === 'black') line([[-4, -10], [6, -4], [12, -10]], seam, 2);
   if (outfit === 'white') line([[-6, -8], [3, -5], [12, -9]], seam, 1.2);
@@ -223,7 +220,7 @@ function drawDJ(ctx, { x, y, scale = 1, phase = 0, running = false, airborne = f
   });
   // Neck tattoos remain visible above the collar.
   shape(-9, -25, 18, 20, 4, '#d6a084');
-  drawNeckTattoo(ctx, 0, -16, 0.65);
+  drawNeckTattoo(ctx, 0, -20, 0.85);
   if (outfit === 'black') {
     shape(-2, -8, 4, 14, 1, '#34353c');
     line([[-11, -11], [-3, -5], [-7, -1], [-14, -8]], '#666771', 1.3);
