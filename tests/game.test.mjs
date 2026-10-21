@@ -10,7 +10,7 @@ const storage = new Map();
 function element(id) {
   if (!elements.has(id)) elements.set(id, { textContent: '', getContext: () => context,
     addEventListener: (type, fn) => { events[id + ':' + type] = fn; },
-    play: () => Promise.resolve(), pause() {}, setAttribute() {} });
+    play: () => Promise.resolve(), pause() {}, focus() {}, attributes: {}, setAttribute(key, value) { this.attributes[key] = value; } });
   return elements.get(id);
 }
 const scope = vm.createContext({ console, Math, performance: { now: () => 0 },
@@ -20,6 +20,29 @@ const scope = vm.createContext({ console, Math, performance: { now: () => 0 },
   CanvasRenderingContext2D: function () {}, requestAnimationFrame() {}, setTimeout() {} });
 for (const file of ['character.js', 'game.js']) vm.runInContext(readFileSync(new URL('../' + file, import.meta.url), 'utf8'), scope);
 const run = code => vm.runInContext(code, scope);
+events['outfit-white:click'](); events['shoes-boots:click'](); events['view-profile:click']();
+assert.equal(run('characterChoice.outfit'), 'white');
+assert.equal(run('characterChoice.view'), 'profile');
+assert.equal(JSON.parse(storage.get('beat-runner-character')).shoes, 'boots');
+assert.equal(element('outfit-white').attributes['aria-pressed'], 'true');
+assert.equal(element('outfit-black').attributes['aria-pressed'], 'false');
+run("selectCharacter('outfit', 'invalid');");
+assert.equal(run('characterChoice.outfit'), 'white');
+run(`for (const outfit of choiceOptions.outfit) for (const shoes of choiceOptions.shoes)
+  for (const view of choiceOptions.view) for (const airborne of [false, true]) {
+    drawDJ(ctx, {x: 0, y: 0, outfit, shoes, view, airborne, running: true, phase: 10});
+  }`);
+events['play:click']();
+assert.equal(element('wardrobe').hidden, true);
+run(`const originalDrawDJ = drawDJ; let renderedChoice;
+  drawDJ = (ctx, choice) => { renderedChoice = choice; }; drawPlayer(); drawDJ = originalDrawDJ;`);
+assert.equal(run('renderedChoice.view'), 'profile');
+assert.equal(run('renderedChoice.outfit'), 'white');
+assert.equal(run('renderedChoice.shoes'), 'boots');
+events['change-look:click']();
+assert.equal(run('STATE'), 'start');
+assert.equal(element('wardrobe').hidden, false);
+assert.equal(run('characterChoice.view'), 'profile');
 run('resetGame(); gameLoop(0);');
 assert.equal(run('STATE'), 'playing');
 run('doJump(); update();');

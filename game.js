@@ -13,6 +13,38 @@ const comboEl = document.getElementById('combo');
 const levelEl = document.getElementById('level');
 const music   = document.getElementById('music');
 
+/* Character choices are validated before restoring browser preferences. */
+const choiceOptions = { outfit: ['black', 'white', 'neon'], shoes: ['sneakers', 'boots'], view: ['front', 'profile'] };
+const characterChoice = { outfit: 'black', shoes: 'sneakers', view: 'front' };
+try {
+  const saved = JSON.parse(localStorage.getItem('beat-runner-character') || '{}');
+  for (const key of Object.keys(choiceOptions)) {
+    if (choiceOptions[key].includes(saved?.[key])) characterChoice[key] = saved[key];
+  }
+} catch {}
+function selectCharacter(key, value) {
+  if (!choiceOptions[key]?.includes(value)) return;
+  characterChoice[key] = value;
+  for (const option of choiceOptions[key]) {
+    document.getElementById(key + '-' + option).setAttribute('aria-pressed', String(option === value));
+  }
+  try { localStorage.setItem('beat-runner-character', JSON.stringify(characterChoice)); } catch {}
+}
+for (const [key, values] of Object.entries(choiceOptions)) {
+  for (const value of values) document.getElementById(key + '-' + value).addEventListener('click', () => selectCharacter(key, value));
+  selectCharacter(key, characterChoice[key]);
+}
+const wardrobe = document.getElementById('wardrobe');
+const playButton = document.getElementById('play');
+const changeLookButton = document.getElementById('change-look');
+playButton.addEventListener('click', () => { resetGame(); canvas.focus(); });
+changeLookButton.addEventListener('click', () => {
+  STATE = 'start'; wardrobe.hidden = false; playButton.hidden = false;
+  beats = []; particles = []; trail = []; comboTexts = [];
+  changeLookButton.hidden = true; document.getElementById('hud').hidden = true;
+  playButton.focus();
+});
+
 /* ── RESIZE ── */
 function resize() {
   canvas.width  = window.innerWidth;
@@ -119,6 +151,7 @@ buildStars();
 /* ── RESET ── */
 function resetGame() {
   document.getElementById('hud').hidden = false;
+  wardrobe.hidden = true; playButton.hidden = true; changeLookButton.hidden = true;
   score = 0; combo = 0; level = 1; frame = 0; spawnTimer = 0;
   beats = []; particles = []; comboTexts = []; trail = [];
   player.y = getGround();
@@ -255,6 +288,7 @@ function update() {
     const ph = player.h - margin * 2;
     if (px < b.x + b.size && px + pw > b.x && py < b.y + b.size && py + ph > b.y) {
       STATE = 'dead';
+      changeLookButton.hidden = false;
       if (score > highScore) {
         highScore = score;
         try { localStorage.setItem('beat-runner-best', String(highScore)); } catch {}
@@ -364,7 +398,7 @@ function drawBackground() {
 
 /* ================================================================
    DRAW – PERSONAGEM DJ
-   Arte original inspirada nas fotos: cabelo descolorido, corrente e jaqueta preta
+   Arte original inspirada nas fotos, com roupas, calçados e vista selecionáveis
    ================================================================ */
 function drawPlayer() {
   if (STATE === 'start') return;
@@ -373,7 +407,7 @@ function drawPlayer() {
   ctx.scale(1 / player.squish, player.squish);
   ctx.fillStyle = 'rgba(0,255,200,0.15)';
   ctx.beginPath(); ctx.ellipse(0, 0, 29, 5, 0, 0, Math.PI * 2); ctx.fill();
-  drawDJ(ctx, { x: 0, y: -54, phase: player.runFrame,
+  drawDJ(ctx, { ...characterChoice, x: 0, y: -54, phase: player.runFrame,
     running: STATE === 'playing' && player.onGround, airborne: !player.onGround });
   ctx.restore();
 }
@@ -549,7 +583,7 @@ function drawComboTexts() {
    ================================================================ */
 function drawStart() {
   const w = canvas.width, h = canvas.height;
-  const compact = h < 500;
+  const compact = h < 500 && w >= 600;
   ctx.textAlign = 'center';
   ctx.fillStyle = '#a4beb9';
   ctx.font = "11px 'Courier New'";
@@ -558,21 +592,22 @@ function drawStart() {
   ctx.fillStyle = '#c8fff0'; ctx.shadowColor = '#00ffc8'; ctx.shadowBlur = 22;
   ctx.fillText('BEAT RUNNER', w / 2, h * 0.19 + 10);
   ctx.shadowBlur = 0;
-  const avatarY = h * 0.46;
+  const avatarY = h * (compact ? 0.60 : 0.46);
+  const avatarX = w * (compact ? 0.24 : 0.5);
   const scale = Math.min(1.9, h / 360);
   ctx.fillStyle = 'rgba(0,255,200,0.06)';
   ctx.strokeStyle = 'rgba(0,255,200,0.22)'; ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.arc(w / 2, avatarY - 7, scale * 73, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-  drawDJ(ctx, { x: w / 2, y: avatarY, scale, phase: performance.now() / 17 });
+  ctx.beginPath(); ctx.arc(avatarX, avatarY - 7, scale * 73, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  drawDJ(ctx, { ...characterChoice, x: avatarX, y: avatarY, scale, phase: performance.now() / 17 });
   ctx.textAlign = 'center';
   ctx.font = "12px 'Courier New'"; ctx.fillStyle = '#b5c8c5';
-  ctx.fillText('Para sempre o DJ', w / 2, h * 0.69);
-  _drawButton(w / 2, h * 0.78, 240, 50, 'SOLTA O PLAY');
+  ctx.fillText('Para sempre o DJ', w / 2, h * 0.19 + 38);
+
   ctx.font = "12px 'Courier New'"; ctx.fillStyle = '#a4beb9';
-  ctx.fillText(w < 500 ? 'Toque para pular. Duas vezes para voar.' : 'ESPAÇO / ↑ / TOQUE · PULO DUPLO', w / 2, h * 0.78 + 50);
+  if (!compact) ctx.fillText(w < 500 ? 'Toque para pular. Duas vezes para voar.' : 'ESPAÇO / ↑ / TOQUE · PULO DUPLO', w / 2, h * 0.87 + 40);
   if (!compact) {
     ctx.fillStyle = '#ccbb87';
-    ctx.fillText('SEU MELHOR SET: ' + highScore + ' PTS', w / 2, h * 0.78 + 78);
+    ctx.fillText('SEU MELHOR SET: ' + highScore + ' PTS', w / 2, h * 0.87 + 62);
   }
   ctx.textAlign = 'left';
 }

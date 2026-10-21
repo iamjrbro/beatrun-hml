@@ -7,8 +7,28 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <canvas id="game" aria-label="Beat Runner: use espaço, seta para cima ou toque para pular os obstáculos musicais. Duplo pulo disponível."></canvas>
+  <canvas id="game" tabindex="0" aria-label="Beat Runner: use espaço, seta para cima ou toque para pular os obstáculos musicais. Duplo pulo disponível."></canvas>
   <button id="sound" type="button" aria-label="Silenciar áudio" aria-pressed="false">SOM ON</button>
+  <section id="wardrobe" aria-label="Escolha seu personagem">
+    <div class="choice-row" role="group" aria-label="Roupa">
+      <span>LOOK</span>
+      <button id="outfit-black" type="button" aria-pressed="true">Polo preta</button>
+      <button id="outfit-white" type="button" aria-pressed="false">Branca lisa</button>
+      <button id="outfit-neon" type="button" aria-pressed="false">Moletom neon</button>
+    </div>
+    <div class="choice-row" role="group" aria-label="Calçado">
+      <span>PÉS</span>
+      <button id="shoes-sneakers" type="button" aria-pressed="true">Tênis</button>
+      <button id="shoes-boots" type="button" aria-pressed="false">Bota Timberland</button>
+    </div>
+    <div class="choice-row" role="group" aria-label="Ângulo do personagem">
+      <span>VISTA</span>
+      <button id="view-front" type="button" aria-pressed="true">De frente</button>
+      <button id="view-profile" type="button" aria-pressed="false">De lado</button>
+    </div>
+  </section>
+  <button id="play" type="button">SOLTA O PLAY</button>
+  <button id="change-look" type="button" hidden>ESCOLHER PERSONAGEM</button>
   <div id="hud" hidden>
     <div class="hud-box">
       <span class="hud-label">SCORE</span>
