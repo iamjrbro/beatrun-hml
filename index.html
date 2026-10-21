@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Beat Runner</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="game"></canvas>
+  <div id="hud">
+    <div class="hud-box">
+      <span class="hud-label">SCORE</span>
+      <span class="hud-val" id="score">0</span>
+    </div>
+    <div class="hud-box" id="levelBox">
+      <span class="hud-label">NÍVEL</span>
+      <span class="hud-val" id="level">1</span>
+    </div>
+    <div class="hud-box">
+      <span class="hud-label">COMBO</span>
+      <span class="hud-val" id="combo">x0</span>
+    </div>
+  </div>
+
+  <!-- Música de fundo: coloque um arquivo music.mp3 na mesma pasta -->
+  <audio id="music" loop>
+    <source src="music.mp3" type="audio/mpeg">
+  </audio>
+
+  <script src="game.js"></script>
+</body>
+</html>
