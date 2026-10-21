@@ -39,6 +39,8 @@ const playButton = document.getElementById('play');
 const changeLookButton = document.getElementById('change-look');
 playButton.addEventListener('click', () => { resetGame(); canvas.focus(); });
 changeLookButton.addEventListener('click', () => {
+  document.getElementById('start-controls').hidden = false;
+  document.getElementById('start-best').textContent = 'SEU MELHOR SET: ' + highScore + ' PTS';
   STATE = 'start'; wardrobe.hidden = false; playButton.hidden = false;
   beats = []; particles = []; trail = []; comboTexts = [];
   changeLookButton.hidden = true; document.getElementById('hud').hidden = true;
@@ -95,6 +97,7 @@ let level       = 1;
 let frame       = 0;
 let highScore = 0;
 try { highScore = Number(localStorage.getItem('beat-runner-best')) || 0; } catch {}
+document.getElementById('start-best').textContent = 'SEU MELHOR SET: ' + highScore + ' PTS';
 let muted = false;
 const soundButton = document.getElementById('sound');
 soundButton.addEventListener('click', () => {
@@ -150,6 +153,7 @@ buildStars();
 
 /* ── RESET ── */
 function resetGame() {
+  document.getElementById('start-controls').hidden = true;
   document.getElementById('hud').hidden = false;
   wardrobe.hidden = true; playButton.hidden = true; changeLookButton.hidden = true;
   score = 0; combo = 0; level = 1; frame = 0; spawnTimer = 0;
@@ -583,8 +587,8 @@ function drawComboTexts() {
    ================================================================ */
 function drawStart() {
   const w = canvas.width, h = canvas.height;
-  const compact = h < 500 && w >= 600;
-  const playY = h * (w <= 480 && h >= 600 ? 0.85 : 0.90);
+  const compact = h <= 500 && w >= 600;
+  const short = h <= 700;
   ctx.textAlign = 'center';
   ctx.fillStyle = '#a4beb9';
   ctx.font = "11px 'Courier New'";
@@ -593,9 +597,9 @@ function drawStart() {
   ctx.fillStyle = '#c8fff0'; ctx.shadowColor = '#00ffc8'; ctx.shadowBlur = 22;
   ctx.fillText('BEAT RUNNER', w / 2, h * 0.19 + 10);
   ctx.shadowBlur = 0;
-  const avatarY = h * (compact ? 0.60 : 0.44);
+  const avatarY = h * (compact ? 0.60 : short ? 0.40 : 0.44);
   const avatarX = w * (compact ? 0.24 : 0.5);
-  const scale = Math.min(1.7, h / 400);
+  const scale = Math.min(1.7, h / (short && !compact ? 480 : 400));
   ctx.fillStyle = 'rgba(0,255,200,0.06)';
   ctx.strokeStyle = 'rgba(0,255,200,0.22)'; ctx.lineWidth = 1;
   ctx.beginPath(); ctx.arc(avatarX, avatarY - 7, scale * 73, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
@@ -604,12 +608,6 @@ function drawStart() {
   ctx.font = "12px 'Courier New'"; ctx.fillStyle = '#b5c8c5';
   ctx.fillText('Para sempre o DJ', w / 2, h * 0.19 + 38);
 
-  ctx.font = "12px 'Courier New'"; ctx.fillStyle = '#a4beb9';
-  if (!compact) ctx.fillText(w < 500 ? 'TOQUE PARA PULAR · PULO DUPLO' : 'ESPAÇO / ↑ / TOQUE · PULO DUPLO', w / 2, playY + 36);
-  if (!compact) {
-    ctx.fillStyle = '#ccbb87';
-    if (h > 800 || (w > 480 && h > 600)) ctx.fillText('SEU MELHOR SET: ' + highScore + ' PTS', w / 2, playY + 56);
-  }
   ctx.textAlign = 'left';
 }
 

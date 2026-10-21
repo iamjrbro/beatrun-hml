@@ -4,11 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Beat Runner</title>
-  <link rel="stylesheet" href="style.css?v=20261021-5">
+  <link rel="stylesheet" href="style.css?v=20261021-6">
 </head>
 <body>
   <canvas id="game" tabindex="0" aria-label="Beat Runner: use espaço, seta para cima ou toque para pular os obstáculos musicais. Duplo pulo disponível."></canvas>
   <button id="sound" type="button" aria-label="Silenciar áudio" aria-pressed="false">SOM ON</button>
+  <div id="start-controls">
   <section id="wardrobe" aria-label="Escolha seu personagem">
     <div class="choice-row" role="group" aria-label="Roupa">
       <span>LOOK</span>
@@ -34,6 +35,9 @@
     </div>
   </section>
   <button id="play" type="button">SOLTA O TRAP</button>
+  <p class="start-help">ESPAÇO / ↑ / TOQUE · PULO DUPLO</p>
+  <p id="start-best"></p>
+  </div>
   <button id="change-look" type="button" hidden>ESCOLHER PERSONAGEM</button>
   <div id="hud" hidden>
     <div class="hud-box">
@@ -56,6 +60,6 @@
   </audio>
 
   <script src="character.js?v=20261021-5"></script>
-  <script src="game.js?v=20261021-5"></script>
+  <script src="game.js?v=20261021-6"></script>
 </body>
 </html>
