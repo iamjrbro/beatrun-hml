@@ -3,50 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Beat Runner</title>
-  <link rel="stylesheet" href="style.css?v=20261021-10">
+  <title>Beat Runner – para o DJ</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <canvas id="game" tabindex="0" aria-label="Beat Runner: use espaço, seta para cima ou toque para pular os obstáculos musicais. Duplo pulo disponível."></canvas>
-  <button id="sound" type="button" aria-label="Silenciar áudio" aria-pressed="false">SOM ON</button>
-  <div id="start-controls">
-  <section id="wardrobe" aria-label="Escolha seu personagem">
-    <div class="choice-row" role="group" aria-label="Roupa">
-      <span>LOOK</span>
-      <button id="outfit-black" type="button" aria-pressed="true">Polo preta</button>
-      <button id="outfit-white" type="button" aria-pressed="false">Branca lisa</button>
-      <button id="outfit-neon" type="button" aria-pressed="false">Moletom neon</button>
-      <button id="outfit-orange" type="button" aria-pressed="false">Moletom laranja</button>
-    </div>
-    <div class="choice-row" role="group" aria-label="Cabelo">
-      <span>CABELO</span>
-      <button id="hair-blond" type="button" aria-pressed="true">Loiro</button>
-      <button id="hair-pink" type="button" aria-pressed="false">Rosa</button>
-    </div>
-    <div class="choice-row" role="group" aria-label="Calça">
-      <span>JEANS</span>
-      <button id="pants-sparkle" type="button" aria-pressed="true">Com brilhos</button>
-      <button id="pants-plain" type="button" aria-pressed="false">Liso</button>
-      <button id="pants-camo" type="button" aria-pressed="false">Militar</button>
-    </div>
-    <div class="choice-row" role="group" aria-label="Calçado">
-      <span>PÉS</span>
-      <button id="shoes-sneakers" type="button" aria-pressed="true">Tênis</button>
-      <button id="shoes-boots" type="button" aria-pressed="false">Bota Timberland</button>
-      <button id="shoes-nike" type="button" aria-pressed="false">Nike branco</button>
-    </div>
-    <div class="choice-row" role="group" aria-label="Ângulo do personagem">
-      <span>VISTA</span>
-      <button id="view-front" type="button" aria-pressed="true">De frente</button>
-      <button id="view-profile" type="button" aria-pressed="false">De lado</button>
-    </div>
-  </section>
-  <button id="play" type="button">SOLTA O TRAP</button>
-  <p class="start-help">ESPAÇO / ↑ / TOQUE · PULO DUPLO</p>
-  <p id="start-best"></p>
-  </div>
-  <button id="change-look" type="button" hidden>ESCOLHER PERSONAGEM</button>
-  <div id="hud" hidden>
+  <canvas id="game"></canvas>
+  <div id="hud">
     <div class="hud-box">
       <span class="hud-label">SCORE</span>
       <span class="hud-val" id="score">0</span>
@@ -66,7 +28,6 @@
     <source src="music.mp3" type="audio/mpeg">
   </audio>
 
-  <script src="character.js?v=20261021-10"></script>
-  <script src="game.js?v=20261021-11"></script>
+  <script src="game.js"></script>
 </body>
 </html>
